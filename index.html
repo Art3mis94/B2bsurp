@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B Surplus - Industrial Equipment Marketplace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background-color: white;
+            color: #1e3a8a;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        /* Equipment Categories */
+        .categories {
+            background-color: #ecf0f1;
+            padding: 4rem 2rem;
+        }
+
+        .categories h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .category-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .category-card:hover {
+            background-color: #1e3a8a;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .how-it-works h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-color: #1e3a8a;
+            color: white;
+            border-radius: 50%;
+            line-height: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+
+        .footer-section a:hover {
+            color: #3498db;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #34495e;
+            color: #95a5a6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">B2B Surplus</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#browse">Browse Equipment</a></li>
+                <li><a href="#sell">Sell Equipment</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1>Industrial Equipment Marketplace</h1>
+        <p>Buy and sell used, refurbished, and surplus industrial equipment with confidence</p>
+        <div class="cta-buttons">
+            <a href="#browse" class="btn btn-primary">Browse Equipment</a>
+            <a href="#sell" class="btn btn-secondary">List Your Equipment</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2>Why Choose B2B Surplus?</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🏭</div>
+                <h3>Verified Sellers</h3>
+                <p>All sellers are verified businesses with track records you can trust</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3>Quality Assurance</h3>
+                <p>Equipment listings include detailed specifications and condition reports</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Competitive Pricing</h3>
+                <p>Get the best deals on surplus equipment from businesses nationwide</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚛</div>
+                <h3>Logistics Support</h3>
+                <p>We help coordinate shipping and handling for large equipment</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📞</div>
+                <h3>Expert Support</h3>
+                <p>Our team is here to help you find the right equipment for your needs</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Quick Transactions</h3>
+                <p>Streamlined process for fast and efficient equipment purchases</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipment Categories -->
+    <section class="categories" id="browse">
+        <h2>Browse by Category</h2>
+        <div class="category-grid">
+            <div class="category-card">
+                <h3>Manufacturing Equipment</h3>
+                <p>CNC machines, lathes, mills</p>
+            </div>
+            <div class="category-card">
+                <h3>Construction Equipment</h3>
+                <p>Excavators, bulldozers, cranes</p>
+            </div>
+            <div class="category-card">
+                <h3>Industrial Tools</h3>
+                <p>Power tools, specialty equipment</p>
+            </div>
+            <div class="category-card">
+                <h3>Electrical Equipment</h3>
+                <p>Generators, transformers, panels</p>
+            </div>
+            <div class="category-card">
+                <h3>Material Handling</h3>
+                <p>Forklifts, conveyors, storage</p>
+            </div>
+            <div class="category-card">
+                <h3>Processing Equipment</h3>
+                <p>Mixers, separators, packaging</p>
+            </div>
+            <div class="category-card">
+                <h3>Testing Equipment</h3>
+                <p>Laboratory and quality control</p>
+            </div>
+            <div class="category-card">
+                <h3>View All Categories</h3>
+                <p>Browse complete inventory</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="sell">
+        <h2>How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Create Account</h3>
+                <p>Register your business and verify your credentials</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>List Equipment</h3>
+                <p>Upload photos, specifications, and pricing information</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Connect Buyers</h3>
+                <p>Interested buyers contact you directly through our platform</p>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Complete Sale</h3>
+                <p>Finalize the transaction and arrange for pickup or delivery</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About B2B Surplus</h3>
+                <p>Your trusted marketplace for industrial equipment. We connect businesses looking to buy and sell surplus equipment efficiently and securely.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#browse">Browse Equipment</a></li>
+                    <li><a href="#sell">Sell Equipment</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Buying Guide</a></li>
+                    <li><a href="#">Selling Guide</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li>Email: info@b2bsurplus.com</li>
+                    <li>Phone: 1-800-B2B-SURPLUS</li>
+                    <li>Hours: Mon-Fri 8AM-6PM EST</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 B2B Surplus. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
