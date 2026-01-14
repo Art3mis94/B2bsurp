@@ -1,469 +1,371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B2B Surplus - Industrial Equipment Marketplace</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <title>B2B Surplus – Modern Equipment Marketplace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8f9fa;
-        }
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
-        /* Header Styles */
-        header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            color: white;
-            padding: 1rem 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+  <!-- Google Identity -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+  <!-- Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: #3498db;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            color: white;
-            padding: 8rem 2rem 4rem;
-            text-align: center;
-            margin-top: 60px;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background-color: #f39c12;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #e67e22;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: white;
-            border: 2px solid white;
-        }
-
-        .btn-secondary:hover {
-            background-color: white;
-            color: #1e3a8a;
-        }
-
-        /* Features Section */
-        .features {
-            padding: 4rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .features h2 {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: #2c3e50;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #2c3e50;
-        }
-
-        /* Equipment Categories */
-        .categories {
-            background-color: #ecf0f1;
-            padding: 4rem 2rem;
-        }
-
-        .categories h2 {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: #2c3e50;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .category-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-
-        .category-card:hover {
-            background-color: #1e3a8a;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        /* How It Works */
-        .how-it-works {
-            padding: 4rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .how-it-works h2 {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: #2c3e50;
-        }
-
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .step {
-            text-align: center;
-            padding: 1.5rem;
-        }
-
-        .step-number {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            background-color: #1e3a8a;
-            color: white;
-            border-radius: 50%;
-            line-height: 50px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #1e3a8a;
-            color: white;
-            padding: 3rem 2rem 1rem;
-            margin-top: 4rem;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h3 {
-            margin-bottom: 1rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section a {
-            color: #ecf0f1;
-            text-decoration: none;
-        }
-
-        .footer-section a:hover {
-            color: #3498db;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid #34495e;
-            color: #95a5a6;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-            
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .hero p {
-                font-size: 1rem;
-            }
-        }
-    </style>
+  <style>
+    :root{
+      --primary:#0052cc;
+      --primary-light:#4c84ff;
+      --bg:#f7f9fc;
+      --card:#ffffff;
+      --text:#202124;
+      --muted:#5f6368;
+      --border:#dadce0;
+      --radius:12px;
+      --shadow:0 4px 12px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Google Sans','Roboto',Arial,sans-serif;}
+    body{background:var(--bg);color:var(--text);line-height:1.4;}
+    a{text-decoration:none;color:inherit;}
+    button{cursor:pointer;border:none;background:none;font-size:14px;font-weight:500;border-radius:6px;padding:8px 16px;transition:.2s;}
+    .btn-primary{background:var(--primary);color:#fff;}
+    .btn-primary:hover{background:var(--primary-light);}
+    .btn-outline{border:1px solid var(--border);}
+    header{position:sticky;top:0;z-index:100;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;padding:12px 24px;}
+    .logo{font-size:22px;font-weight:700;color:var(--primary);}
+    .search-bar{flex:1;max-width:500px;margin:0 24px;display:flex;align-items:center;background:var(--bg);border-radius:24px;padding:0 16px;}
+    .search-bar input{border:none;background:none;outline:none;width:100%;padding:10px;font-size:14px;}
+    .filters{margin:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+    .filters select,.filters input{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;}
+    .chip{background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:16px;font-size:13px;cursor:pointer;transition:.2s;}
+    .chip.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+    main{max-width:1200px;margin:auto;padding:24px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:.2s;}
+    .card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,.1);}
+    .card img{width:100%;height:200px;object-fit:cover;background:#e8eaed;}
+    .card-body{padding:16px;flex:1;display:flex;flex-direction:column;}
+    .card-title{font-size:16px;font-weight:600;margin-bottom:4px;}
+    .card-meta{font-size:13px;color:var(--muted);}
+    .card-price{margin-top:auto;font-size:18px;font-weight:700;color:var(--primary);}
+    .badge{position:absolute;top:12px;left:12px;background:var(--primary);color:#fff;font-size:12px;padding:4px 10px;border-radius:4px;}
+    .relative{position:relative;}
+    .center{display:flex;align-items:center;justify-content:center;height:60vh;flex-direction:text-align:center;color:var(--muted);}
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;}
+    .modal.show{display:flex;}
+    .modal-content{background:var(--card);border-radius:var(--radius);padding:32px;max-width:420px;width:90%;}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .close{cursor:pointer;font-size:24px;color:var(--muted);}
+    .field{margin-bottom:16px;display:flex;flex-direction:column;}
+    .field label{font-size:13px;margin-bottom:6px;color:var(--muted);}
+    .field input,.field textarea,.field select{padding:10px;border:1px solid var(--border);border-radius:6px;font-size:14px;}
+    .field textarea{resize:vertical;min-height:80px;}
+    .actions{display:flex;gap:12px;justify-content:flex-end;margin-top:16px;}
+    .chat-window{position:fixed;bottom:24px;right:24px;width:320px;height:420px;background:var(--card);border-radius:var(--radius);box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;flex-direction:column;z-index:150;}
+    .chat-header{background:var(--primary);color:#fff;padding:12px 16px;border-radius:var(--radius) var(--radius) 0 0;display:flex;justify-content:space-between;align-items:center;}
+    .chat-body{flex:1;padding:12px;overflow-y:auto;font-size:14px;}
+    .chat-footer{display:flex;padding:12px;border-top:1px solid var(--border);}
+    .chat-footer input{flex:1;border:none;outline:none;padding:8px;font-size:14px;}
+    .chat-footer button{background:var(--primary);color:#fff;padding:8px 12px;border-radius:6px;margin-left:8px;}
+    .msg{margin-bottom:8px;}
+    .msg.you{text-align:right;}
+    .msg.you span{background:var(--primary-light);color:#fff;display:inline-block;padding:6px 12px;border-radius:12px;}
+    .msg.them span{background:var(--bg);display:inline-block;padding:6px 12px;border-radius:12px;}
+    .sign-in-btn{background:#fff;color:var(--primary);border:1px solid var(--primary);padding:8px 16px;border-radius:6px;font-weight:500;}
+    @media(max-width:600px){
+      .filters{flex-direction:column;align-items:stretch;}
+      .search-bar{margin:12px 0;}
+    }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <nav>
-            <div class="logo">B2B Surplus</div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#browse">Browse Equipment</a></li>
-                <li><a href="#sell">Sell Equipment</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <h1>Industrial Equipment Marketplace</h1>
-        <p>Buy and sell used, refurbished, and surplus industrial equipment with confidence</p>
-        <div class="cta-buttons">
-            <a href="#browse" class="btn btn-primary">Browse Equipment</a>
-            <a href="#sell" class="btn btn-secondary">List Your Equipment</a>
-        </div>
-    </section>
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="logo">B2B Surplus</div>
+  <div class="search-bar">
+    <span class="material-icons" style="color:var(--muted);font-size:20px;">search</span>
+    <input id="globalSearch" placeholder="Search equipment, SKU, company…">
+  </div>
+  <div>
+    <button id="openChatBtn" class="btn-outline" style="margin-right:8px;">
+      <span class="material-icons" style="vertical-align:middle;">chat</span>
+    </button>
+    <button id="signInBtn" class="sign-in-btn">Sign In</button>
+    <button id="userMenu" class="btn-primary" style="display:none;">Account</button>
+</div>
+</header>
 
-    <!-- Features Section -->
-    <section class="features">
-        <h2>Why Choose B2B Surplus?</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🏭</div>
-                <h3>Verified Sellers</h3>
-                <p>All sellers are verified businesses with track records you can trust</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔧</div>
-                <h3>Quality Assurance</h3>
-                <p>Equipment listings include detailed specifications and condition reports</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">💰</div>
-                <h3>Competitive Pricing</h3>
-                <p>Get the best deals on surplus equipment from businesses nationwide</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🚛</div>
-                <h3>Logistics Support</h3>
-                <p>We help coordinate shipping and handling for large equipment</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📞</div>
-                <h3>Expert Support</h3>
-                <p>Our team is here to help you find the right equipment for your needs</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Quick Transactions</h3>
-                <p>Streamlined process for fast and efficient equipment purchases</p>
-            </div>
-        </div>
-    </section>
+<!-- ===== FILTERS ===== -->
+<div class="filters">
+  <select id="sectorFilter">
+    <option value="">All Sectors</option>
+    <option>Manufacturing</option>
+    <option>Construction</option>
+    <option>Energy</option>
+    <option>Medical</option>
+    <option>Food & Beverage</option>
+  </select>
 
-    <!-- Equipment Categories -->
-    <section class="categories" id="browse">
-        <h2>Browse by Category</h2>
-        <div class="category-grid">
-            <div class="category-card">
-                <h3>Manufacturing Equipment</h3>
-                <p>CNC machines, lathes, mills</p>
-            </div>
-            <div class="category-card">
-                <h3>Construction Equipment</h3>
-                <p>Excavators, bulldozers, cranes</p>
-            </div>
-            <div class="category-card">
-                <h3>Industrial Tools</h3>
-                <p>Power tools, specialty equipment</p>
-            </div>
-            <div class="category-card">
-                <h3>Electrical Equipment</h3>
-                <p>Generators, transformers, panels</p>
-            </div>
-            <div class="category-card">
-                <h3>Material Handling</h3>
-                <p>Forklifts, conveyors, storage</p>
-            </div>
-            <div class="category-card">
-                <h3>Processing Equipment</h3>
-                <p>Mixers, separators, packaging</p>
-            </div>
-            <div class="category-card">
-                <h3>Testing Equipment</h3>
-                <p>Laboratory and quality control</p>
-            </div>
-            <div class="category-card">
-                <h3>View All Categories</h3>
-                <p>Browse complete inventory</p>
-            </div>
-        </div>
-    </section>
+  <select id="conditionFilter">
+    <option value="">Any Condition</option>
+    <option>New</option>
+    <option>Refurbished</option>
+    <option>Used – Good</option>
+    <option>Used – Fair</option>
+  </select>
 
-    <!-- How It Works -->
-    <section class="how-it-works" id="sell">
-        <h2>How It Works</h2>
-        <div class="steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3>Create Account</h3>
-                <p>Register your business and verify your credentials</p>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3>List Equipment</h3>
-                <p>Upload photos, specifications, and pricing information</p>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <h3>Connect Buyers</h3>
-                <p>Interested buyers contact you directly through our platform</p>
-            </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <h3>Complete Sale</h3>
-                <p>Finalize the transaction and arrange for pickup or delivery</p>
-            </div>
-        </div>
-    </section>
+  <select id="sortBy">
+    <option value="dateDesc">Newest</option>
+    <option value="dateAsc">Oldest</option>
+    <option value="priceAsc">Price ↑</option>
+    <option value="priceDesc">Price ↓</option>
+  </select>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>About B2B Surplus</h3>
-                <p>Your trusted marketplace for industrial equipment. We connect businesses looking to buy and sell surplus equipment efficiently and securely.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="#browse">Browse Equipment</a></li>
-                    <li><a href="#sell">Sell Equipment</a></li>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Support</h3>
-                <ul>
-                    <li><a href="#">Help Center</a></li>
-                    <li><a href="#">Buying Guide</a></li>
-                    <li><a href="#">Selling Guide</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Us</h3>
-                <ul>
-                    <li>Email: info@b2bsurplus.com</li>
-                    <li>Phone: 1-800-B2B-SURPLUS</li>
-                    <li>Hours: Mon-Fri 8AM-6PM EST</li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 B2B Surplus. All rights reserved.</p>
-        </div>
-    </footer>
+  <input type="number" id="priceMin" placeholder="Min price ($)" style="width:120px;">
+  <input type="number" id="priceMax" placeholder="Max price ($)" style="width:120px;">
+
+  <button id="resetFilters" class="btn-outline">Reset</button>
+  <button id="sellBtn" class="btn-primary">+ List Equipment</button>
+</div>
+
+<!-- ===== MAIN GRID ===== -->
+<main>
+  <div id="equipmentGrid" class="grid"><!-- JS populated --></div>
+</main>
+
+<!-- ===== LISTING MODAL ===== -->
+<div id="listingModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>List Equipment</h3>
+      <span class="close" data-close>&times;</span>
+    </div>
+    <form id="listingForm">
+      <div class="field"><label>Title</label><input name="title" required></div>
+      <div class="field"><label>Description</label><textarea name="description" required></textarea></div>
+      <div class="field"><label>Sector</label>
+        <select name="sector" required>
+          <option>Manufacturing</option><option>Construction</option><option>Energy</option><option>Medical</option><option>Food & Beverage</option>
+        </select>
+      </div>
+      <div class="field"><label>Condition</label>
+        <select name="condition" required>
+          <option>New</option><option>Refurbished</option><option>Used – Good</option><option>Used – Fair</option>
+        </select>
+      </div>
+      <div class="field"><label>Price ($)</label><input type="number" name="price" required></div>
+      <div class="field"><label>Image</label><input type="file" name="image" accept="image/*"></div>
+      <div class="actions">
+        <button type="button" data-close class="btn-outline">Cancel</button>
+        <button type="submit" class="btn-primary">Publish</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== CHAT WINDOW ===== -->
+<div id="chatWindow" class="chat-window">
+  <div class="chat-header">
+    <span>Messages</span>
+    <span id="closeChat" class="close" style="color:#fff;">×</span>
+  </div>
+  <div id="chatBody" class="chat-body"></div>
+  <div class="chat-footer">
+    <input id="chatInput" placeholder="Type message…">
+    <button id="sendMsg">Send</button>
+  </div>
+</div>
+
+<script>
+  /* ===== FIREBASE SETUP ===== */
+  const firebaseConfig = {
+    apiKey: "AIzaSyCrbAWZAiUuIfhwrPC0xa8WPTsVGJWDy1c",
+    authDomain: "business2business-67222.firebaseapp.com",
+    projectId: "business2business-67222",
+    storageBucket: "business2business-67222.firebasestorage.app",
+    messagingSenderId: "913722719592",
+    appId: "1:913722719592:web:9d54f832b102e4d842aadd",
+    measurementId: "G-BDWSNQPKSX"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
+  /* ===== STATE ===== */
+  let currentUser = null;
+  let unsubListings = null;
+  let activeChatId = null;
+
+  /* ===== AUTH ===== */
+  auth.onAuthStateChanged(user => {
+    currentUser = user;
+    document.getElementById('signInBtn').style.display = user ? 'none' : 'inline-block';
+    document.getElementById('userMenu').style.display = user ? 'inline-block' : 'none';
+    loadListings();
+    if(user) subscribeMessages();
+  });
+
+  /* Google Popup */
+  document.getElementById('signInBtn').onclick = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider);
+  };
+  document.getElementById('userMenu').onclick = () => auth.signOut();
+
+  /* ===== LISTINGS ===== */
+  function loadListings(){
+    if(unsubListings) unsubListings();
+    const q = buildQuery();
+    unsubListings = q.onSnapshot(snap => {
+      const grid = document.getElementById('equipmentGrid');
+      grid.innerHTML = '';
+      snap.forEach(doc => renderCard(doc));
+      if(!snap.size) grid.innerHTML = '<div class="center">No listings match your filters.</div>';
+    });
+  }
+
+  function buildQuery(){
+    let ref = db.collection('listings');
+    const s = id => document.getElementById(id).value;
+    if(s('sectorFilter')) ref = ref.where('sector','==',s('sectorFilter'));
+    if(s('conditionFilter')) ref = ref.where('condition','==',s('conditionFilter'));
+    const min = s('priceMin');
+    const max = s('priceMax');
+    if(min) ref = ref.where('price','>=',Number(min));
+    if(max) ref = ref.where('price','<=',Number(max));
+    const search = s('globalSearch').trim();
+    if(search) ref = ref.where('keywords','array-contains',search.toLowerCase());
+
+    const sort = s('sortBy');
+    let field = 'createdAt', dir = 'desc';
+    if(sort==='priceAsc'){ field='price'; dir='asc'; }
+    if(sort==='priceDesc'){ field='price'; dir='desc'; }
+    if(sort==='dateAsc'){ field='createdAt'; dir='asc'; }
+    return ref.orderBy(field, dir);
+  }
+
+  function renderCard(doc){
+    const d = doc.data();
+    const div = document.createElement('div');
+    div.className = 'card relative';
+    div.innerHTML = `
+      <div class="badge">${d.condition}</div>
+      <img src="${d.imageUrl || 'https://via.placeholder.com/400x200?text=No+Image'}" alt="">
+      <div class="card-body">
+        <div class="card-title">${d.title}</div>
+        <div class="card-meta">${d.sector} • Listed ${new Date(d.createdAt?.toDate()).toLocaleDateString()}</div>
+        <div class="card-price">$${d.price.toLocaleString()}</div>
+        <button class="btn-primary" style="margin-top:12px;width:100%;" onclick="startChat('${d.sellerId}','${d.sellerName}','${doc.id}')">Contact Seller</button>
+      </div>
+    `;
+    document.getElementById('equipmentGrid').appendChild(div);
+  }
+
+  /* Filters */
+  ['sectorFilter','conditionFilter','sortBy','priceMin','priceMax','globalSearch'].forEach(id => {
+    document.getElementById(id).onchange = loadListings;
+  });
+  document.getElementById('resetFilters').onclick = () => {
+    ['sectorFilter','conditionFilter','sortBy','priceMin','priceMax','globalSearch'].forEach(id => document.getElementById(id).value='');
+    loadListings();
+  };
+
+  /* ===== LISTING FORM ===== */
+  document.getElementById('sellBtn').onclick = () => modal(true);
+  document.getElementById('listingForm').onsubmit = async e => {
+    e.preventDefault();
+    if(!currentUser){ alert('Please sign in first'); return; }
+    const f = e.target;
+    const data = {
+      title: f.title.value,
+      description: f.description.value,
+      sector: f.sector.value,
+      condition: f.condition.value,
+      price: Number(f.price.value),
+      sellerId: currentUser.uid,
+      sellerName: currentUser.displayName || currentUser.email,
+      sellerEmail: currentUser.email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      keywords: f.title.value.toLowerCase().split(' ')
+    };
+    if(f.image.files[0]){
+      const snap = await storage.ref(`listings/${Date.now()}_${f.image.files[0].name}`).put(f.image.files[0]);
+      data.imageUrl = await snap.ref.getDownloadURL();
+    }
+    await db.collection('listings').add(data);
+    modal(false);
+    f.reset();
+  };
+
+  /* ===== CHAT ===== */
+  window.startChat = (sellerId, sellerName, listingId) => {
+    if(!currentUser){ alert('Sign in to message sellers'); return; }
+    const chatId = [currentUser.uid, sellerId].sort().join('_');
+    activeChatId = chatId;
+    document.getElementById('chatWindow').style.display = 'flex';
+    renderMessages(chatId);
+  };
+  document.getElementById('closeChat').onclick = () => {
+    document.getElementById('chatWindow').style.display = 'none';
+    activeChatId = null;
+  };
+  document.getElementById('sendMsg').onclick = () => sendMessage();
+  document.getElementById('chatInput').onkeyup = e => { if(e.key==='Enter') sendMessage(); };
+
+  function sendMessage(){
+    const input = document.getElementById('chatInput');
+    if(!input.value.trim() || !activeChatId) return;
+    db.collection('chats').doc(activeChatId).collection('messages').add({
+      from: currentUser.uid,
+      fromName: currentUser.displayName || currentUser.email,
+      text: input.value,
+      ts: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    input.value='';
+  }
+  function subscribeMessages(){
+    if(!currentUser) return;
+    // Subscribe to any chat involving current user
+    db.collection('chats').where('participants','array-contains',currentUser.uid)
+      .onSnapshot(snap => {
+        snap.docChanges().forEach(change => {
+          if(change.type==='added' || change.type==='modified'){
+            renderMessages(change.doc.id);
+          }
+        });
+      });
+  }
+  function renderMessages(chatId){
+    if(chatId!==activeChatId) return;
+    const body = document.getElementById('chatBody');
+    body.innerHTML='';
+    db.collection('chats').doc(chatId).collection('messages')
+      .orderBy('ts','asc')
+      .onSnapshot(snap => {
+        snap.forEach(doc => {
+          const m = doc.data();
+          const div = document.createElement('div');
+          div.className = 'msg ' + (m.from===currentUser.uid ? 'you' : 'them');
+          div.innerHTML = `<span>${m.text}</span>`;
+          body.appendChild(div);
+        });
+        body.scrollTop = body.scrollHeight;
+      });
+  }
+
+  /* ===== UTILS ===== */
+  function modal(show){
+    document.getElementById('listingModal').classList.toggle('show', show);
+  }
+  document.querySelectorAll('[data-close]').forEach(el => el.onclick = () => modal(false));
+</script>
+
 </body>
 </html>
