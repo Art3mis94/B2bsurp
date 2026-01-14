@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>B2B Surplus – Industrial Equipment Marketplace</title> 
+  <title>B2B Surplus – Industrial Equipment Marketplace</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Firebase -->
@@ -125,14 +125,85 @@
       color: #1e3a8a;
     }
     
+    /* Admin Styles */
+    .admin-only { display: none; }
+    .admin-bar {
+      background: #d32f2f;
+      color: white;
+      padding: 8px 24px;
+      font-size: 14px;
+      display: none;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 24px;
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .admin-table th,
+    .admin-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .admin-table tr:hover {
+      background: rgba(0,0,0,.02);
+    }
+    .edit-input {
+      border: 1px solid var(--primary);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 14px;
+      width: 100%;
+    }
+    .admin-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .admin-login {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 32px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .admin-login h2 {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .role-badge {
+      background: #d32f2f;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    
     @media(max-width:600px){
       .filters{flex-direction:column;align-items:stretch;}
       .search-bar{margin:12px 0;}
       .hero h1 {font-size: 2rem;}
+      .admin-table { font-size: 14px; }
+      .admin-table th,
+      .admin-table td { padding: 8px 12px; }
     }
   </style>
 </head>
 <body>
+
+<!-- Admin Bar (shown only to admins) -->
+<div id="adminBar" class="admin-bar">
+  🔒 Admin Mode | <a href="#admin" style="color:white;text-decoration:underline;">Dashboard</a>
+</div>
 
 <!-- ===== HEADER ===== -->
 <header>
@@ -193,10 +264,74 @@
   <button id="sellBtn" class="btn-primary">+ List Equipment</button>
 </div>
 
-<!-- ===== MAIN GRID ===== -->
-<main>
+<!-- ===== MAIN GRID (Market View) ===== -->
+<main id="marketView">
   <div id="equipmentGrid" class="grid"><!-- JS populated --></div>
 </main>
+
+<!-- ===== ADMIN LOGIN PAGE ===== -->
+<div id="adminLoginView" style="display:none;">
+  <div class="admin-login">
+    <h2>Admin Login</h2>
+    <form id="adminLoginForm">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" name="email" required>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" required>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-outline" onclick="showMarket()">Cancel</button>
+        <button type="submit" class="btn-primary">Login</button>
+      </div>
+    </form>
+    <div style="margin-top:16px;text-align:center;">
+      <button class="btn-outline" onclick="adminGoogleSignIn()">
+        <span class="material-icons" style="vertical-align:middle;font-size:18px;">login</span>
+        Google Admin Login
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN DASHBOARD ===== -->
+<div id="adminDashboardView" style="display:none;">
+  <main>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <h1>Admin Dashboard</h1>
+      <div>
+        <button class="btn-outline" onclick="showMarket()">Back to Market</button>
+        <button class="btn-primary" onclick="auth.signOut()">Logout</button>
+      </div>
+    </div>
+    
+    <div style="margin-bottom:24px;">
+      <h2>All Listings</h2>
+      <div style="margin-top:12px;font-size:14px;color:var(--muted);">
+        Click any cell to edit inline. Changes auto-save.
+      </div>
+    </div>
+    
+    <table class="admin-table" id="adminTable">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Sector</th>
+          <th>Condition</th>
+          <th>Price</th>
+          <th>Seller</th>
+          <th>Listed</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="adminTableBody">
+        <!-- Populated by JS -->
+      </tbody>
+    </table>
+  </main>
+</div>
 
 <!-- ===== LISTING MODAL ===== -->
 <div id="listingModal" class="modal">
@@ -260,24 +395,150 @@
   let currentUser = null;
   let unsubListings = null;
   let activeChatId = null;
+  let isAdmin = false;
 
   /* ===== AUTH ===== */
   auth.onAuthStateChanged(user => {
     currentUser = user;
     document.getElementById('signInBtn').style.display = user ? 'none' : 'inline-block';
     document.getElementById('userMenu').style.display = user ? 'inline-block' : 'none';
-    loadListings();
-    if(user) subscribeMessages();
+    
+    if (user) {
+      checkAdminClaim(user);
+      loadListings();
+      subscribeMessages();
+    } else {
+      isAdmin = false;
+      document.getElementById('adminBar').style.display = 'none';
+      showMarket();
+    }
   });
 
-  /* Google Popup */
-  document.getElementById('signInBtn').onclick = () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider);
-  };
-  document.getElementById('userMenu').onclick = () => auth.signOut();
+  function checkAdminClaim(user) {
+    user.getIdTokenResult().then(idTokenResult => {
+      isAdmin = idTokenResult.claims.role === 'admin';
+      document.getElementById('adminBar').style.display = isAdmin ? 'flex' : 'none';
+      if (window.location.hash === '#admin' && !isAdmin) {
+        window.location.hash = '';
+        showMarket();
+      }
+    });
+  }
 
-  /* ===== LISTINGS ===== */
+  /* ===== ROUTING ===== */
+  window.addEventListener('hashchange', handleRouting);
+  handleRouting(); // initial call
+
+  function handleRouting() {
+    const hash = window.location.hash;
+    if (hash === '#admin') {
+      if (!currentUser) {
+        window.location.hash = '#admin-login';
+        return;
+      }
+      if (!isAdmin) {
+        alert('Access denied. Admin privileges required.');
+        window.location.hash = '';
+        return;
+      }
+      showAdminDashboard();
+    } else if (hash === '#admin-login') {
+      showAdminLogin();
+    } else {
+      showMarket();
+    }
+  }
+
+  function showMarket() {
+    window.location.hash = '';
+    document.getElementById('marketView').style.display = 'block';
+    document.getElementById('adminLoginView').style.display = 'none';
+    document.getElementById('adminDashboardView').style.display = 'none';
+    loadListings();
+  }
+
+  function showAdminLogin() {
+    document.getElementById('marketView').style.display = 'none';
+    document.getElementById('adminLoginView').style.display = 'block';
+    document.getElementById('adminDashboardView').style.display = 'none';
+  }
+
+  function showAdminDashboard() {
+    document.getElementById('marketView').style.display = 'none';
+    document.getElementById('adminLoginView').style.display = 'none';
+    document.getElementById('adminDashboardView').style.display = 'block';
+    loadAdminListings();
+  }
+
+  /* ===== ADMIN LOGIN ===== */
+  document.getElementById('adminLoginForm').onsubmit = async e => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      window.location.hash = '#admin';
+    } catch (err) {
+      alert('Login failed: ' + err.message);
+    }
+  };
+
+  function adminGoogleSignIn() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).then(() => {
+      window.location.hash = '#admin';
+    }).catch(err => {
+      alert('Google login failed: ' + err.message);
+    });
+  }
+
+  /* ===== ADMIN LISTINGS ===== */
+  function loadAdminListings() {
+    db.collection('listings').orderBy('createdAt', 'desc').onSnapshot(snap => {
+      const tbody = document.getElementById('adminTableBody');
+      tbody.innerHTML = '';
+      snap.forEach(doc => renderAdminRow(doc));
+    });
+  }
+
+  function renderAdminRow(doc) {
+    const d = doc.data();
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="edit-input" data-id="${doc.id}" data-field="title" value="${d.title}"></td>
+      <td><input class="edit-input" data-id="${doc.id}" data-field="sector" value="${d.sector}"></td>
+      <td><input class="edit-input" data-id="${doc.id}" data-field="condition" value="${d.condition}"></td>
+      <td><input class="edit-input" data-id="${doc.id}" data-field="price" type="number" value="${d.price}"></td>
+      <td>${d.sellerName}</td>
+      <td>${new Date(d.createdAt?.toDate()).toLocaleDateString()}</td>
+      <td class="admin-actions">
+        <button class="btn-primary" onclick="startChat('${d.sellerId}','${d.sellerName}','${doc.id}')">Contact</button>
+        <button class="btn-outline" onclick="deleteListing('${doc.id}')" style="color:#d32f2f;">Delete</button>
+      </td>
+    `;
+    document.getElementById('adminTableBody').appendChild(tr);
+    
+    // Add auto-save listeners
+    tr.querySelectorAll('.edit-input').forEach(input => {
+      input.addEventListener('change', e => {
+        const id = e.target.dataset.id;
+        const field = e.target.dataset.field;
+        const value = field === 'price' ? Number(e.target.value) : e.target.value;
+        db.collection('listings').doc(id).update({[field]: value})
+          .then(() => console.log('Updated', field))
+          .catch(err => alert('Update failed: ' + err.message));
+      });
+    });
+  }
+
+  function deleteListing(id) {
+    if (!confirm('Delete this listing permanently?')) return;
+    db.collection('listings').doc(id).delete()
+      .then(() => console.log('Deleted'))
+      .catch(err => alert('Delete failed: ' + err.message));
+  }
+
+  /* ===== MARKET LISTINGS ===== */
   function loadListings(){
     if(unsubListings) unsubListings();
     const q = buildQuery();
