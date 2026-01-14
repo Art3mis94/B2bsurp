@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>B2B Surplus – Modern Equipment Marketplace</title>
+  <title>B2B Surplus – Industrial Equipment Marketplace</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Firebase -->
@@ -74,9 +74,61 @@
     .msg.you span{background:var(--primary-light);color:#fff;display:inline-block;padding:6px 12px;border-radius:12px;}
     .msg.them span{background:var(--bg);display:inline-block;padding:6px 12px;border-radius:12px;}
     .sign-in-btn{background:#fff;color:var(--primary);border:1px solid var(--primary);padding:8px 16px;border-radius:6px;font-weight:500;}
+    
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+      margin-top: 0;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary {
+      background-color: #f39c12;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #e67e22;
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background-color: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+    .btn-secondary:hover {
+      background-color: white;
+      color: #1e3a8a;
+    }
+    
     @media(max-width:600px){
       .filters{flex-direction:column;align-items:stretch;}
       .search-bar{margin:12px 0;}
+      .hero h1 {font-size: 2rem;}
     }
   </style>
 </head>
@@ -97,6 +149,16 @@
     <button id="userMenu" class="btn-primary" style="display:none;">Account</button>
 </div>
 </header>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+  <h1>Industrial Equipment Marketplace</h1>
+  <p>Buy and sell used, refurbished, and surplus industrial equipment with confidence</p>
+  <div class="cta-buttons">
+    <button class="btn btn-primary" onclick="scrollToListings()">Browse Equipment</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('sellBtn').click()">List Your Equipment</button>
+  </div>
+</section>
 
 <!-- ===== FILTERS ===== -->
 <div class="filters">
@@ -295,6 +357,7 @@
     await db.collection('listings').add(data);
     modal(false);
     f.reset();
+    alert('Equipment listed successfully!');
   };
 
   /* ===== CHAT ===== */
@@ -302,7 +365,6 @@
     if(!currentUser){ alert('Sign in to message sellers'); return; }
     const chatId = [currentUser.uid, sellerId].sort().join('_');
     activeChatId = chatId;
-    // Ensure chat doc exists with participants
     db.collection('chats').doc(chatId).set({
       participants: [currentUser.uid, sellerId],
       listingId: listingId
@@ -363,6 +425,10 @@
     document.getElementById('listingModal').classList.toggle('show', show);
   }
   document.querySelectorAll('[data-close]').forEach(el => el.onclick = () => modal(false));
+  
+  function scrollToListings() {
+    document.querySelector('.filters').scrollIntoView({ behavior: 'smooth' });
+  }
 </script>
 
 </body>
