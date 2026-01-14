@@ -9,7 +9,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
   <!-- Google Identity -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -42,8 +41,6 @@
     .search-bar input{border:none;background:none;outline:none;width:100%;padding:10px;font-size:14px;}
     .filters{margin:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
     .filters select,.filters input{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;}
-    .chip{background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:16px;font-size:13px;cursor:pointer;transition:.2s;}
-    .chip.active{background:var(--primary);color:#fff;border-color:var(--primary);}
     main{max-width:1200px;margin:auto;padding:24px;}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;}
     .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:.2s;}
@@ -160,7 +157,7 @@
         </select>
       </div>
       <div class="field"><label>Price ($)</label><input type="number" name="price" required></div>
-      <div class="field"><label>Image</label><input type="file" name="image" accept="image/*"></div>
+      <div class="field"><label>External Image URL (optional)</label><input type="url" name="imageUrl" placeholder="https://example.com/image.jpg"></div>
       <div class="actions">
         <button type="button" data-close class="btn-outline">Cancel</button>
         <button type="submit" class="btn-primary">Publish</button>
@@ -196,7 +193,6 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
-  const storage = firebase.storage();
 
   /* ===== STATE ===== */
   let currentUser = null;
@@ -293,12 +289,9 @@
       sellerName: currentUser.displayName || currentUser.email,
       sellerEmail: currentUser.email,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      keywords: f.title.value.toLowerCase().split(' ')
+      keywords: f.title.value.toLowerCase().split(' '),
+      imageUrl: f.imageUrl.value || ''
     };
-    if(f.image.files[0]){
-      const snap = await storage.ref(`listings/${Date.now()}_${f.image.files[0].name}`).put(f.image.files[0]);
-      data.imageUrl = await snap.ref.getDownloadURL();
-    }
     await db.collection('listings').add(data);
     modal(false);
     f.reset();
@@ -309,6 +302,11 @@
     if(!currentUser){ alert('Sign in to message sellers'); return; }
     const chatId = [currentUser.uid, sellerId].sort().join('_');
     activeChatId = chatId;
+    // Ensure chat doc exists with participants
+    db.collection('chats').doc(chatId).set({
+      participants: [currentUser.uid, sellerId],
+      listingId: listingId
+    }, { merge: true });
     document.getElementById('chatWindow').style.display = 'flex';
     renderMessages(chatId);
   };
@@ -332,7 +330,6 @@
   }
   function subscribeMessages(){
     if(!currentUser) return;
-    // Subscribe to any chat involving current user
     db.collection('chats').where('participants','array-contains',currentUser.uid)
       .onSnapshot(snap => {
         snap.docChanges().forEach(change => {
@@ -349,6 +346,7 @@
     db.collection('chats').doc(chatId).collection('messages')
       .orderBy('ts','asc')
       .onSnapshot(snap => {
+        body.innerHTML='';
         snap.forEach(doc => {
           const m = doc.data();
           const div = document.createElement('div');
